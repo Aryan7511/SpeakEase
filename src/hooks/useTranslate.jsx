@@ -32,7 +32,7 @@ const useTranslate = (sourceText, selectedLanguage) => {
           }
         });
 
-        const message = `Translate the following sentence into ${selectedLanguage}: "${sourceText}". Do not return anything other than the translated sentence.`;
+        const message =`Please correct any spelling mistakes in the following text "${sourceText}", detect its language, and then translate it into ${selectedLanguage}. Do not return anything other than the translated sentence.`;
         const result = await chat.sendMessage(message);
         const data = result.response?.text();
         setTargetText(data);
