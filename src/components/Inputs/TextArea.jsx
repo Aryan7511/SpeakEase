@@ -9,6 +9,7 @@ const TextArea = ({ id, value, onChange, placeholder }) => (
     placeholder={placeholder}
     value={value}
     onChange={onChange}
+    maxLength={2000}
   />
 );
 
