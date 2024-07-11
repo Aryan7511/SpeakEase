@@ -11,7 +11,6 @@ import {
 import SpeechRecognitionComponent from '@/components/SpeechRecognition/SpeechRecognition';
 import TextArea from '@/components/Inputs/TextArea';
 import FileUpload from '@/components/Inputs/FileUpload';
-import LinkPaste from '@/components/Inputs/LinkPaste';
 import LanguageSelector from '@/components/Inputs/LanguageSelector';
 import useTranslate from '@/hooks/useTranslate';
 import { rtfToText } from '@/utils/rtfToText';
@@ -34,6 +33,10 @@ const Home: React.FC = () => {
 
   const targetText = useTranslate(sourceText, selectedLanguage);
 
+  const [activeButton, setActiveButton] = useState<'like' | 'dislike' | null>(
+    null
+  );
+
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -42,34 +45,25 @@ const Home: React.FC = () => {
         const rtfContent = reader.result as string;
         const text = rtfToText(rtfContent);
         setSourceText(text);
+        // Reset like and dislike state when new text is entered
+        setActiveButton(null);
       };
       reader.readAsText(file);
-    }
-  };
-
-  const handleLinkPaste = async (e: ChangeEvent<HTMLInputElement>) => {
-    const link = e.target.value;
-    try {
-      const response = await fetch(link);
-      const data = await response.text();
-      setSourceText(data);
-    } catch (error) {
-      console.error('Error fetching link content:', error);
     }
   };
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(targetText);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 1000);
   };
 
   const handleLike = () => {
-    // Implement like logic
+    setActiveButton((prev) => (prev === 'like' ? null : 'like'));
   };
 
   const handleDislike = () => {
-    // Implement dislike logic
+    setActiveButton((prev) => (prev === 'dislike' ? null : 'dislike'));
   };
 
   const handleFavorite = () => {
@@ -82,15 +76,26 @@ const Home: React.FC = () => {
   };
 
   const handleAudioPlayback = (text: string) => {
+    // Check if there is any ongoing speech
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel(); // Stop any ongoing speech
+    }
+
     const utterance = new SpeechSynthesisUtterance(text);
     window.speechSynthesis.speak(utterance);
+  };
+
+  const handleSourceTextChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setSourceText(e.target.value);
+    // Reset like and dislike state when new text is entered
+    setActiveButton(null);
   };
 
   return (
     <div className="w-full bg-black bg-dot-white/[0.2] relative flex items-center justify-center">
       <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
 
-      <div className="relative overflow-hidden h-screen">
+      <div className="relative ">
         <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-24">
           <div className="text-center">
             <h1 className="text-4xl sm:text-6xl font-bold  text-neutral-200">
@@ -107,9 +112,7 @@ const Home: React.FC = () => {
                   <TextArea
                     id="source-language"
                     value={sourceText}
-                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                      setSourceText(e.target.value)
-                    }
+                    onChange={handleSourceTextChange}
                     placeholder="Source Language"
                   />
                   <div className="flex flex-row justify-between w-full">
@@ -122,7 +125,6 @@ const Home: React.FC = () => {
                         onClick={() => handleAudioPlayback(sourceText)}
                       />
                       <FileUpload handleFileUpload={handleFileUpload} />
-                      <LinkPaste handleLinkPaste={handleLinkPaste} />
                     </span>
                     <span className="text-sm pr-4">
                       {sourceText.length} / 2000
@@ -150,12 +152,26 @@ const Home: React.FC = () => {
                       />
                     </span>
                     <div className="flex flex-row items-center space-x-2 pr-4 cursor-pointer">
-                      <IconCopy size={22} onClick={handleCopyToClipboard} />
-                      {copied && (
-                        <span className="text-xs text-green-500">Copied!</span>
-                      )}
-                      <IconThumbUp size={22} onClick={handleLike} />
-                      <IconThumbDown size={22} onClick={handleDislike} />
+                      <IconCopy
+                        size={22}
+                        className={copied === true ? 'text-[#4ace25]' : ''}
+                        onClick={handleCopyToClipboard}
+                      />
+
+                      <IconThumbUp
+                        size={22}
+                        onClick={handleLike}
+                        className={
+                          activeButton === 'like' ? 'text-blue-500' : ''
+                        }
+                      />
+                      <IconThumbDown
+                        size={22}
+                        onClick={handleDislike}
+                        className={
+                          activeButton === 'dislike' ? 'text-red-500' : ''
+                        }
+                      />
                       <IconStar
                         size={22}
                         onClick={handleFavorite}
