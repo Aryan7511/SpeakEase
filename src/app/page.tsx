@@ -23,13 +23,13 @@ const Home: React.FC = () => {
   const [copied, setCopied] = useState<boolean>(false);
   const [favorite, setFavorite] = useState<boolean>(false);
   const [languages] = useState<string[]>([
+    'Hindi',
     'English',
     'Spanish',
     'French',
-    'German',
-    'Hindi'
+    'German'
   ]);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('Spanish');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('Hindi');
 
   const targetText = useTranslate(sourceText, selectedLanguage);
 
