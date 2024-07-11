@@ -14,7 +14,7 @@ const SpeechRecognitionComponent = ({ setSourceText }) => {
   const handleVoiceRecording = () => {
     if (listening) {
       SpeechRecognition.stopListening();
-      resetTranscript(); // Clear the transcript when stopping
+      // resetTranscript(); // Clear the transcript when stopping
     } else {
       SpeechRecognition.startListening({ continuous: true });
     }
