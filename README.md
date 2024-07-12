@@ -10,7 +10,7 @@ SpeakEase is an advanced platform that enables real-time voice recognition and t
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 SpeakEase is built using the following technologies:
 
-[![Stack Used](https://skillicons.dev/icons?i=nextjs,typescript,tailwind,nodejs,npm)](https://skillicons.dev)
+[![Stack Used](https://skillicons.dev/icons?i=nextjs,typescript,html,tailwind,nodejs,npm)](https://skillicons.dev)
 
 ## <a name="features">🔋 **Features**</a>
 
